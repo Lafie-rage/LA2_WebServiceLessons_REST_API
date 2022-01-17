@@ -5,47 +5,49 @@ const Place = require("./controller");
 
 describe("Places/controller", () => {
 
-  // region /api/places/:id
-  it("GET /api/places/2 should respond a http 200 OK", () => {
-    const app = new App(new Place(new PlaceData())).app;
-    return request(app)
-      .get("/api/places/2")
-      .expect("Content-Type", /json/)
-      .expect(200)
-      .then(response => {
-        expect(response.body.author).toBe("Louis");
-      });
-  });
+    // region GET /api/places/:id
+    it("GET /api/places/2 should respond a http 200 OK", () => {
+        const app = new App(new Place(new PlaceData())).app;
+        return request(app)
+            .get("/api/places/2")
+            .expect("Content-Type", /json/)
+            .expect(200)
+            .then(response => {
+                expect(response.body.author).toBe("Louis");
+            });
+    });
 
-  it("GET /api/places/youhou should respond a http 404", () => {
-    const app = new App(new Place(new PlaceData())).app;
-    return request(app)
-      .get("/api/places/youhou")
-      .expect("Content-Type", /json/)
-      .expect(404)
-      .expect(response => {
-        expect(response.body.key).toBe("entity.not.found");
-      });
-  });
+    it("GET /api/places/youhou should respond a http 404", () => {
+        const app = new App(new Place(new PlaceData())).app;
+        return request(app)
+            .get("/api/places/youhou")
+            .expect("Content-Type", /json/)
+            .expect(404)
+            .expect(response => {
+                expect(response.body.key).toBe("entity.not.found");
+            });
+    });
 
-  // endregion
+    // endregion
 
-  // region /api/places
+    // region GET /api/places
 
-  it("GET /api/places should respond a http 200", () => {
-    const app = new App(new Place(new PlaceData())).app;
-    return request(app)
-        .get("/api/places")
-        .expect("Content-Type", /json/)
-        .expect(200)
-        .expect(response => {
-          expect(response.body.length).toBe(3);
-        });
-  });
+    it("GET /api/places should respond a http 200", () => {
+        const app = new App(new Place(new PlaceData())).app;
+        return request(app)
+            .get("/api/places")
+            .expect("Content-Type", /json/)
+            .expect(200)
+            .expect(response => {
+                expect(response.body.length).toBe(3);
+            });
+    });
 
-  // endregion
+    // endregion
 
-  /*it('POST /api/places should respond a http 201 OK with no image', () => {
+    // region POST /api/places/
+
+    it('POST /api/places should respond a http 201 OK with no image', () => {
         var newPlace = {
             name: 'Londre',
             author: 'Patrick',
@@ -113,5 +115,29 @@ describe("Places/controller", () => {
             .expect('Content-Type', /json/)
             .expect(400);
 
-    });*/
+    });
+
+    // endregion
+
+    // region DELETE /api/places/:id
+
+    // Delete place sending an id of an existent one
+    it('DELETE /api/places should respond a http 200 OK', () => {
+        const app = new App(new Place(new PlaceData())).app;
+        return request(app)
+            .delete('/api/places/2')
+            .expect('Content-Type', /json/)
+            .expect(200);
+    });
+
+    // Delete a place sending an incorrect id
+    it('DELETE /api/places should respond a http 400 KO', () => {
+        const app = new App(new Place(new PlaceData())).app;
+        return request(app)
+            .delete('/api/places/0')
+            .expect('Content-Type', /json/)
+            .expect(404);
+    });
+
+    // endregion
 });
