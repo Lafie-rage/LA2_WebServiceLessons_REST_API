@@ -1,3 +1,4 @@
+const {request, response} = require("express");
 
 const Validator = require('jsonschema').Validator;
 
@@ -22,8 +23,7 @@ class Places {
 
         app.get("/api/places", async (request, response) => {
             response.setHeader('Access-Control-Allow-Origin', "http://localhost:3000") // On authorize les requêtes en cross origin pour le client react seulement
-            response.setHeader('Access-Control-Allow-Methods', "GET")
-            response.setHeader('Access-Control-Allow-Headers', "Accept, Api-version")
+            response.setHeader('Cache-Control', 'max-age=15')
             const places = await data.getPlacesAsync();
             if (places !== undefined) {
                 response.status(200).json(places);
@@ -34,6 +34,8 @@ class Places {
 
         app.post("/api/places", async (request, response) => {
             const place = request.body
+            response.setHeader('Access-Control-Allow-Origin', "http://localhost:3000") // On authorize les requêtes en cross origin pour le client react seulement
+            response.setHeader('Access-Control-Allow-Headers', "Location")
             const fieldValidator = "^([A-z]|-| ){3,100}$"; // Between 3 to 100 charactères. Only letters in upper or lower case, - and spaces.
             // Find on https://stackoverflow.com/a/17773849
             const urlValidators = "(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]+\\.[^\\s]{2,})"
@@ -59,7 +61,7 @@ class Places {
             };
 
             const validate = validator.validate(place, placeObjectSchema);
-            if(!validate.valid) {
+            if (!validate.valid) {
                 response.status(400).json({key: "Data.not.match.rules", error: validate.errors})
                 return;
             }
@@ -74,16 +76,25 @@ class Places {
 
         app.delete("/api/places/:id", async (request, response) => {
             const placeId = request.params.id
-            if(placeId === undefined) {
+            if (placeId === undefined) {
                 response.status(400).json({key: "No.id.transmitted"})
                 return;
             }
 
-            if(await data.deletePlaceAsync(placeId)) {
+            if (await data.deletePlaceAsync(placeId)) {
                 response.status(200).json({status: "OK"})
                 return;
             }
             response.status(404).json({key: "Entity.not.found", status: "NOT FOUND"});
+        })
+
+        app.options("/api/places/", async (request, response) => {
+            response.setHeader('Access-Control-Allow-Origin', "http://localhost:3000") // On authorize les requêtes en cross origin pour le client react seulement
+            response.setHeader('Access-Control-Allow-Methods', "GET, POST, OPTIONS")
+            response.setHeader('Access-Control-Allow-Headers', "my-custom-header, Content-Type")
+            response.setHeader('Cache-Control', 'max-age=30')
+
+            response.json()
         })
     }
 }
