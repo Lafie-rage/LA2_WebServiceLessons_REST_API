@@ -11,7 +11,7 @@ class App {
         }));
         app.use(bodyParser.json());
 
-        var middlewareHttp = function (request, response, next) {
+        const middlewareHttp = function (request, response, next) {
             response.setHeader('Api-version', packageJson.version);
             response.setHeader('Accept', 'application/json; charset=utf-8'); // Define the content-type as JSON
 

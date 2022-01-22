@@ -10,6 +10,7 @@ class Places {
         const data = this.data;
 
         app.get("/api/places/:id", async (request, response) => {
+            response.setHeader('Access-Control-Allow-Origin', "http://localhost:3000") // On authorize les requêtes en cross origin pour le client react seulement
             let id = request.params.id;
             const place = await data.getPlaceAsync(id);
             if (place !== undefined) {
@@ -20,6 +21,9 @@ class Places {
         });
 
         app.get("/api/places", async (request, response) => {
+            response.setHeader('Access-Control-Allow-Origin', "http://localhost:3000") // On authorize les requêtes en cross origin pour le client react seulement
+            response.setHeader('Access-Control-Allow-Methods', "GET")
+            response.setHeader('Access-Control-Allow-Headers', "Accept, Api-version")
             const places = await data.getPlacesAsync();
             if (places !== undefined) {
                 response.status(200).json(places);
